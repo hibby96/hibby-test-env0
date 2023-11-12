@@ -31,22 +31,12 @@ jobs:
       if: steps.get_project_id.outputs.projectId != ''
       run: |
         curl --request POST \
-        --url https://api.env0.com/environments \
-        --header 'accept: application/json' \
-        --header 'content-type: application/json' \
-        --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
-        --data '{
-          "name": "Test New Environment",
-          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
-          "workspaceName": "example-workspace",
-          "terraformVersion": "1.0.0",
-          "variables": [
-            {
-              "name": "example_variable",
-              "value": "example_value",
-              "isSensitive": false
-            }
-          ],
+             --url https://api.env0.com/environments/without-template \
+             --header 'accept: application/json' \
+             --header 'content-type: application/json' \
+             --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
+             --data '
+        {
           "deployRequest": {
             "configurationChanges": {
               "type": 0
@@ -54,6 +44,15 @@ jobs:
             "ttl": {
               "type": "INFINITE"
             }
-          }
+          },
+          "ttl": {
+            "type": "INFINITE"
+          },
+          "configurationChanges": {
+            "type": 0
+          },
+          "repository": "github.com",
+          "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
+          "name": "test-env",
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}"
         }'
-      
