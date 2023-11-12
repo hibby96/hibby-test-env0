@@ -5,6 +5,10 @@ on:
       projectName:
         description: 'Project Name to use to get the ID'
         required: true
+  push:
+    branches:
+      - 'main'
+      - 'releases/**'
 jobs:
   create-env0-environment:
     runs-on: ubuntu-latest
