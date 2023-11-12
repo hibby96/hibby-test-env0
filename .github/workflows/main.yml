@@ -46,5 +46,14 @@ jobs:
               "value": "example_value",
               "isSensitive": false
             }
-          ]
+          ],
+          "deployRequest": {
+            "configurationChanges": {
+              "type": 0
+            },
+            "ttl": {
+              "type": "INFINITE"
+            }
+          }
         }'
+      
