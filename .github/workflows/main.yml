@@ -46,6 +46,5 @@ jobs:
               "value": "example_value",
               "isSensitive": false
             }
-            // Add more variables as needed
           ]
         }'
