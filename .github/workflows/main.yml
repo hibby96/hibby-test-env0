@@ -1,0 +1,46 @@
+name: Env0 Create Env
+on:
+  workflow_dispatch:
+    inputs:
+      projectName:
+        description: 'Project Name to use to get the ID'
+        required: true
+jobs:
+  create-env0-environment:
+    runs-on: ubuntu-latest
+    outputs:
+      projectId: ${{ steps.get_project_id.outputs.projectId }}
+    steps:
+    - name: Get Project ID
+      id: get_project_id
+      run: |
+        response=$(curl --request GET \
+          --url https://api.env0.com/projects \
+          --header 'accept: application/json' \
+          --header 'content-type: application/json' \
+          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
+        projectId=$(echo $response | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
+        echo "::set-output name=projectId::$projectId"
+
+    - name: Create Env0 Environment
+      if: steps.get_project_id.outputs.projectId != ''
+      run: |
+        curl --request POST \
+        --url https://api.env0.com/environments \
+        --header 'accept: application/json' \
+        --header 'content-type: application/json' \
+        --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
+        --data '{
+          "name": "Test New Environment",
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+          "workspaceName": "example-workspace",
+          "terraformVersion": "1.0.0",
+          "variables": [
+            {
+              "name": "example_variable",
+              "value": "example_value",
+              "isSensitive": false
+            }
+            // Add more variables as needed
+          ]
+        }'
