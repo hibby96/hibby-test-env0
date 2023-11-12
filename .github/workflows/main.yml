@@ -18,7 +18,7 @@ jobs:
           --url https://api.env0.com/projects \
           --header 'accept: application/json' \
           --header 'content-type: application/json' \
-          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
+          --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
         projectId=$(echo "$response" | jq -r --arg projectName "${{ github.event.inputs.projectName }}" '.[] | select(.name==$projectName).id')
         echo "::set-output name=projectId::$projectId"
 
