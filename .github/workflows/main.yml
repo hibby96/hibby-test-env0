@@ -15,12 +15,12 @@ jobs:
       id: get_project_id
       run: |
         response=$(curl --request GET \
-          --url https://api.env0.com/projects \
+          --url 'https://api.env0.com/projects?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
           --header 'accept: application/json' \
           --header 'content-type: application/json' \
-          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB)
+          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
         echo "API Response: $response"
-        projectId=$(echo "$response" | jq -r '.[] | select(.name=="test").id')
+        projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
         echo "::set-output name=projectId::$projectId"
 
     - name: Create Env0 Environment
