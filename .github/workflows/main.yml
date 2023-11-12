@@ -38,9 +38,10 @@ jobs:
              --data '
         {
           "deployRequest": {
-            "configurationChanges": {
-              "type": 0
-            },
+          "configurationChanges": {
+            "type": 0,
+            "name": "configChangeName"
+          },
             "ttl": {
               "type": "INFINITE"
             }
