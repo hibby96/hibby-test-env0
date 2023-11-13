@@ -5,6 +5,14 @@ on:
       projectName:
         description: 'Project Name to use to get the ID'
         required: true
+      owner:
+        description: 'Owner of this infrastructure'
+        required: true
+        default: 'Will'
+      envName:
+        description: 'Name of your environment'
+        required: true
+        default: 'my-testing-environment'
   push:
     branches:
       - 'main'
@@ -29,73 +37,116 @@ jobs:
         echo "API Response: $response"
         projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
         echo "::set-output name=projectId::$projectId"
-        
-    - name: Create Blueprint
-      id: create_blueprint
-      run: |
-        response=$(curl --request POST \
-             --url https://api.env0.com/blueprints \
-             --header 'accept: application/json' \
-             --header 'content-type: application/json' \
-             --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB' \
-             --data '{
-               "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
-               "type":"terraform",
-               "name": "My GitHub Blueprint",
-               "description": "Blueprint using GitHub repository",
-               "repository": "https://github.com/hibby96/platinum-sample-app",
-               "revision": "main",
-               "path": "/",
-               "terraformVersion": "latest"
-             }')
-        echo "API Response: $response"
-        blueprintId=$(echo "$response" | jq -r '.id')
-        blueprintRevision=$(echo "$response" | jq -r '.revision')
-        blueprintRepository=$(echo "$response" | jq -r '.repository')
-        echo "::set-output name=blueprintId::$blueprintId"
-        echo "::set-output name=blueprintRevision::$blueprintRevision"
-        echo "::set-output name=blueprintRepository::$blueprintRepository"
 
-    - name: Add Blueprint to Selected Project
-      if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
+
+    - name: Create Environment
+      id: create_environment
       run: |
-        curl --request PATCH \
-             --url https://api.env0.com/blueprints/${{ steps.create_blueprint.outputs.blueprintId }}/projects \
+        curl --request POST \
+             --url https://api.env0.com/environments/without-template \
              --header 'accept: application/json' \
              --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
              --header 'content-type: application/json' \
              --data '
         {
-          "projectId": "${{ steps.get_project_id.outputs.projectId }}"
-        }
-        '
-
-    - name: Create Env0 Environment
-      if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
-      run: |
-        curl --request POST \
-             --url https://api.env0.com/environments \
-             --header 'accept: application/json' \
-             --header 'content-type: application/json' \
-             --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
-             --data '
-        {
-          "name": "Test Environment",
-          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
-          "workspaceName": "default",
-          "requiresApproval": false,
-          "ttl": {
-            "type": "INFINITE"
-          },
           "deployRequest": {
-            "deploymentType": "deploy",
-            "blueprintRepository": "${{ steps.create_blueprint.outputs.blueprintRepository }}",
-            "blueprintRevision": "${{ steps.create_blueprint.outputs.blueprintRevision }}",
-            "blueprintId": "${{ steps.create_blueprint.outputs.blueprintId }}",
+            "configurationChanges": {
+              "type": 0
+            },
             "ttl": {
               "type": "INFINITE"
             }
           },
-          "continuousDeployment": false,
-          "pullRequestPlanDeployments": false
-        }'
+          "ttl": {
+            "type": "INFINITE"
+          },
+          "configurationChanges": {
+            "type": 0
+          },
+          "name": "${{ github.event.inputs.envName }}",
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+          "workspaceName": "${{ github.event.inputs.projectName }}-${{ github.event.inputs.owner }}"
+          "requiresApproval": true,
+          "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
+          "repository": "https://github.com/hibby96/platinum-sample-app",
+          "path": "/",
+          "revision": "master",
+          "isRemoteBackend": true,
+          "terraformVersion": "1.22"
+        }
+        '
+
+
+
+
+
+    # Blueprint method
+    # - name: Create Blueprint
+    #   id: create_blueprint
+    #   run: |
+    #     response=$(curl --request POST \
+    #          --url https://api.env0.com/blueprints \
+    #          --header 'accept: application/json' \
+    #          --header 'content-type: application/json' \
+    #          --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB' \
+    #          --data '{
+    #            "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
+    #            "type":"terraform",
+    #            "name": "My GitHub Blueprint",
+    #            "description": "Blueprint using GitHub repository",
+    #            "repository": "https://github.com/hibby96/platinum-sample-app",
+    #            "revision": "main",
+    #            "path": "/",
+    #            "terraformVersion": "latest"
+    #          }')
+    #     echo "API Response: $response"
+    #     blueprintId=$(echo "$response" | jq -r '.id')
+    #     blueprintRevision=$(echo "$response" | jq -r '.revision')
+    #     blueprintRepository=$(echo "$response" | jq -r '.repository')
+    #     echo "::set-output name=blueprintId::$blueprintId"
+    #     echo "::set-output name=blueprintRevision::$blueprintRevision"
+    #     echo "::set-output name=blueprintRepository::$blueprintRepository"
+
+    # - name: Add Blueprint to Selected Project
+    #   if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
+    #   run: |
+    #     curl --request PATCH \
+    #          --url https://api.env0.com/blueprints/${{ steps.create_blueprint.outputs.blueprintId }}/projects \
+    #          --header 'accept: application/json' \
+    #          --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
+    #          --header 'content-type: application/json' \
+    #          --data '
+    #     {
+    #       "projectId": "${{ steps.get_project_id.outputs.projectId }}"
+    #     }
+    #     '
+
+    # - name: Create Env0 Environment
+    #   if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
+    #   run: |
+    #     curl --request POST \
+    #          --url https://api.env0.com/environments \
+    #          --header 'accept: application/json' \
+    #          --header 'content-type: application/json' \
+    #          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
+    #          --data '
+    #     {
+    #       "name": "Test Environment",
+    #       "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+    #       "workspaceName": "${{ github.event.inputs.projectName }}-${{ github.event.inputs.owner }}",
+    #       "requiresApproval": false,
+    #       "ttl": {
+    #         "type": "INFINITE"
+    #       },
+    #       "deployRequest": {
+    #         "deploymentType": "deploy",
+    #         "blueprintRepository": "${{ steps.create_blueprint.outputs.blueprintRepository }}",
+    #         "blueprintRevision": "${{ steps.create_blueprint.outputs.blueprintRevision }}",
+    #         "blueprintId": "${{ steps.create_blueprint.outputs.blueprintId }}",
+    #         "ttl": {
+    #           "type": "INFINITE"
+    #         }
+    #       },
+    #       "continuousDeployment": false,
+    #       "pullRequestPlanDeployments": false
+    #     }'
