@@ -50,7 +50,7 @@ jobs:
           "deployRequest": {
             "deploymentType": "deploy",
             "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
-            "blueprintId": "1"
+            "blueprintId": "1",
             "ttl": {
               "type": "INFINITE"
             }
