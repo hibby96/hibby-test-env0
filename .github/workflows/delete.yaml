@@ -2,7 +2,7 @@ name: Env0 Delete Env
 on:
   workflow_dispatch:
     inputs:
-      envID:
+      envName:
         description: 'ID of your environment'
         required: true
   push:
@@ -12,12 +12,27 @@ on:
 jobs:
   delete-env0-environment:
     runs-on: ubuntu-latest
+    outputs:
+      environmentId: ${{ steps.find_environment_id.outputs.environmentId }}
     steps:
+    - name: Get Environment ID
+      id: get_environment_id
+      run: |
+        response=$(curl --request GET \
+          --url 'https://api.env0.com/environments?organizationId=495ff223-396d-4354-b141-d6cac7560431&projectId=${{ github.event.inputs.projectId }}' \
+          --header 'accept: application/json' \
+          --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
+          --header 'content-type: application/json')
+        echo "API Response: $response"
+        environmentId=$(echo "$response" | jq -r --arg envName "${{ github.event.inputs.environmentName }}" '.[] | select(.name==$envName).id')
+        echo "::set-output name=environmentId::$environmentId"
+
+    
     - name: Delete Environment
       id: delete_environment
       run: |
         curl --request POST \
-         --url https://api.env0.com/environments/"${{ github.event.inputs.envID }}"/destroy \
+         --url https://api.env0.com/environments/"${{ steps.get_environment_id.outputs.environmentId }}"/destroy \
          --header 'accept: application/json' \
          --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
          --header 'content-type: application/json'
