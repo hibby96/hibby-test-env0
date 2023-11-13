@@ -17,11 +17,11 @@ jobs:
     steps:
       - name: Get blueprints
         run: |
-         curl --request GET \
-         --url 'https://api.env0.com/blueprints?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
-         --header 'accept: application/json' \
-         --header 'content-type: application/json' \
-         --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB
+           curl --request GET \
+           --url 'https://api.env0.com/blueprints?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
+           --header 'accept: application/json' \
+           --header 'content-type: application/json' \
+           --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB'
 
     # - name: Get Project ID
     #   id: get_project_id
