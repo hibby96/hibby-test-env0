@@ -72,6 +72,7 @@ jobs:
           "path": "/",
           "revision": "master",
           "isRemoteBackend": true,
+          "type": "terraform",
           "terraformVersion": "1.22"
         }
         '
