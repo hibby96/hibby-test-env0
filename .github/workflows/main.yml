@@ -15,52 +15,46 @@ jobs:
     outputs:
       projectId: ${{ steps.get_project_id.outputs.projectId }}
     steps:
-      - name: Get blueprints
-        run: |
-          curl --request GET \
-          --url 'https://api.env0.com/blueprints?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
+
+
+
+    - name: Get Project ID
+      id: get_project_id
+      run: |
+        response=$(curl --request GET \
+          --url 'https://api.env0.com/projects?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
           --header 'accept: application/json' \
           --header 'content-type: application/json' \
-          --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB'
+          --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
+        echo "API Response: $response"
+        projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
+        echo "::set-output name=projectId::$projectId"
 
-
-    # - name: Get Project ID
-    #   id: get_project_id
-    #   run: |
-    #     response=$(curl --request GET \
-    #       --url 'https://api.env0.com/projects?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
-    #       --header 'accept: application/json' \
-    #       --header 'content-type: application/json' \
-    #       --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
-    #     echo "API Response: $response"
-    #     projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
-    #     echo "::set-output name=projectId::$projectId"
-
-    # - name: Create Env0 Environment
-    #   if: steps.get_project_id.outputs.projectId != ''
-    #   run: |
-    #     curl --request POST \
-    #          --url https://api.env0.com/environments \
-    #          --header 'accept: application/json' \
-    #          --header 'content-type: application/json' \
-    #          --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
-    #          --data '
-    #     {
-    #       "name": "Test Environment",
-    #       "projectId": "${{ steps.get_project_id.outputs.projectId }}",
-    #       "workspaceName": "default",
-    #       "requiresApproval": false,
-    #       "ttl": {
-    #         "type": "INFINITE"
-    #       },
-    #       "deployRequest": {
-    #         "deploymentType": "deploy",
-    #         "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
-    #         "ttl": {
-    #           "type": "INFINITE"
-    #         }
-    #       },
-        #   "continuousDeployment": false,
-        #   "pullRequestPlanDeployments": false
-        # }'
+    - name: Create Env0 Environment
+      if: steps.get_project_id.outputs.projectId != ''
+      run: |
+        curl --request POST \
+             --url https://api.env0.com/environments \
+             --header 'accept: application/json' \
+             --header 'content-type: application/json' \
+             --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
+             --data '
+        {
+          "name": "Test Environment",
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+          "workspaceName": "default",
+          "requiresApproval": false,
+          "ttl": {
+            "type": "INFINITE"
+          },
+          "deployRequest": {
+            "deploymentType": "deploy",
+            "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
+            "ttl": {
+              "type": "INFINITE"
+            }
+          },
+          "continuousDeployment": false,
+          "pullRequestPlanDeployments": false
+        }'
 
