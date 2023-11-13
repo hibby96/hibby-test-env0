@@ -40,6 +40,7 @@ jobs:
              --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB' \
              --data '{
                "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
+               "type":"terraform",
                "name": "My GitHub Blueprint",
                "description": "Blueprint using GitHub repository",
                "repository": "https://github.com/hibby96/platinum-sample-app",
