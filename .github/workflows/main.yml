@@ -31,29 +31,27 @@ jobs:
       if: steps.get_project_id.outputs.projectId != ''
       run: |
         curl --request POST \
-             --url https://api.env0.com/environments/without-template \
+             --url https://api.env0.com/environments \
              --header 'accept: application/json' \
              --header 'content-type: application/json' \
              --user xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB \
              --data '
         {
-          "deployRequest": {
-          "configurationChanges": {
-            "type": 0,
-            "name": "configChangeName"
+          "name": "Test Environment",
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+          "workspaceName": "default",
+          "requiresApproval": false,
+          "ttl": {
+            "type": "INFINITE"
           },
+          "deployRequest": {
+            "deploymentType": "deploy",
+            "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
             "ttl": {
               "type": "INFINITE"
             }
           },
-          "ttl": {
-            "type": "INFINITE"
-          },
-          "configurationChanges": {
-            "type": 0
-          },
-          "repository": "https://github.com/hibby96/platinum-sample-app",
-          "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
-          "name": "test-env",
-          "projectId": "${{ steps.get_project_id.outputs.projectId }}"
+          "continuousDeployment": false,
+          "pullRequestPlanDeployments": false
         }'
+
