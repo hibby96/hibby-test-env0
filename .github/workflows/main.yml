@@ -56,6 +56,20 @@ jobs:
         echo "::set-output name=blueprintRevision::$blueprintRevision"
         echo "::set-output name=blueprintRepository::$blueprintRepository"
 
+    - name: Add Blueprint to Selected Project
+      if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
+      run: |
+        curl --request PATCH \
+             --url https://api.env0.com/blueprints/${{ steps.create_blueprint.outputs.blueprintId }}/projects \
+             --header 'accept: application/json' \
+             --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
+             --header 'content-type: application/json' \
+             --data '
+        {
+          "projectId": "${{ steps.get_project_id.outputs.projectId }}"
+        }
+        '
+
     - name: Create Env0 Environment
       if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
       run: |
