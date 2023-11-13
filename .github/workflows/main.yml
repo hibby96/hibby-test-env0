@@ -85,7 +85,7 @@ jobs:
           "revision": "master",
           "isRemoteBackend": true,
           "type": "terraform",
-          "terraformVersion": "1.22"
+          "terraformVersion": "1.2.2"
         }
         '
 
