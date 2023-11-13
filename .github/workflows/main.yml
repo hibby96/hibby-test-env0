@@ -29,9 +29,34 @@ jobs:
         echo "API Response: $response"
         projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
         echo "::set-output name=projectId::$projectId"
+        
+    - name: Create Blueprint
+      id: create_blueprint
+      run: |
+        response=$(curl --request POST \
+             --url https://api.env0.com/blueprints \
+             --header 'accept: application/json' \
+             --header 'content-type: application/json' \
+             --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB' \
+             --data '{
+               "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
+               "name": "My GitHub Blueprint",
+               "description": "Blueprint using GitHub repository",
+               "repository": "https://github.com/hibby96/platinum-sample-app",
+               "revision": "main",
+               "path": "/",
+               "terraformVersion": "latest"
+             }')
+        echo "API Response: $response"
+        blueprintId=$(echo "$response" | jq -r '.id')
+        blueprintRevision=$(echo "$response" | jq -r '.revision')
+        blueprintRepository=$(echo "$response" | jq -r '.repository')
+        echo "::set-output name=blueprintId::$blueprintId"
+        echo "::set-output name=blueprintRevision::$blueprintRevision"
+        echo "::set-output name=blueprintRepository::$blueprintRepository"
 
     - name: Create Env0 Environment
-      if: steps.get_project_id.outputs.projectId != ''
+      if: steps.get_project_id.outputs.projectId != '' && steps.create_blueprint.outputs.blueprintId != ''
       run: |
         curl --request POST \
              --url https://api.env0.com/environments \
@@ -49,8 +74,9 @@ jobs:
           },
           "deployRequest": {
             "deploymentType": "deploy",
-            "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
-            "blueprintId": "1",
+            "blueprintRepository": "${{ steps.create_blueprint.outputs.blueprintRepository }}",
+            "blueprintRevision": "${{ steps.create_blueprint.outputs.blueprintRevision }}",
+            "blueprintId": "${{ steps.create_blueprint.outputs.blueprintId }}",
             "ttl": {
               "type": "INFINITE"
             }
