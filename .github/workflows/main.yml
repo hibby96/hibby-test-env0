@@ -64,7 +64,7 @@ jobs:
             "type": 0,
             "name": "config_change",
             "toDelete": true,
-            "projectId": "${{ steps.get_project_id.outputs.projectId }}",
+            "projectId": "${{ steps.get_project_id.outputs.projectId }}"
           },
           "name": "${{ github.event.inputs.envName }}",
           "projectId": "${{ steps.get_project_id.outputs.projectId }}",
