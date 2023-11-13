@@ -1,1 +1,23 @@
-
+name: Env0 Delete Env
+on:
+  workflow_dispatch:
+    inputs:
+      envID:
+        description: 'ID of your environment'
+        required: true
+  push:
+    branches:
+      - 'main'
+      - 'releases/**'
+jobs:
+  delete-env0-environment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete Environment
+      id: delete_environment
+      run: |
+        curl --request POST \
+         --url https://api.env0.com/environments/"${{ github.event.inputs.envID }}"/destroy \
+         --header 'accept: application/json' \
+         --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
+         --header 'content-type: application/json'
