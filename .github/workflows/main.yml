@@ -58,7 +58,9 @@ jobs:
                   "string"
                 ],
                 "format": "HCL"
-              }
+              },
+              "name": "${{ github.event.inputs.envName }}",
+              "projectId": "${{ steps.get_project_id.outputs.projectId }}"
             },
             "ttl": {
               "type": "INFINITE"
@@ -69,7 +71,7 @@ jobs:
           },
           "configurationChanges": {
             "type": 0,
-            "name": "config_change",
+            "name": "${{ github.event.inputs.envName }}",
             "toDelete": true,
             "projectId": "${{ steps.get_project_id.outputs.projectId }}"
           },
