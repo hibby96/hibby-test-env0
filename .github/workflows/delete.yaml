@@ -2,12 +2,15 @@ name: Env0 Delete Env
 on:
   workflow_dispatch:
     inputs:
-      envName:
-        description: 'Name of your environment'
+      envId:
+        description: 'ID of your environment'
         required: true
-      projectName:
-        description: 'Project Name to use to get the ID'
-        required: true
+      # envName:
+      #   description: 'Name of your environment'
+      #   required: true
+      # projectName:
+      #   description: 'Project Name to use to get the ID'
+      #   required: true
   push:
     branches:
       - 'main'
@@ -15,41 +18,41 @@ on:
 jobs:
   delete-env0-environment:
     runs-on: ubuntu-latest
-    outputs:
-      environmentId: ${{ steps.find_environment_id.outputs.environmentId }}
-      projectId: ${{ steps.get_project_id.outputs.projectId }}
+    # outputs:
+    #   environmentId: ${{ steps.find_environment_id.outputs.environmentId }}
+    #   projectId: ${{ steps.get_project_id.outputs.projectId }}
     steps:
 
-    - name: Get Project ID
-      id: get_project_id
-      run: |
-        response=$(curl --request GET \
-          --url 'https://api.env0.com/projects?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
-          --header 'accept: application/json' \
-          --header 'content-type: application/json' \
-          --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
-        echo "API Response: $response"
-        projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
-        echo "::set-output name=projectId::$projectId"
+    # - name: Get Project ID
+    #   id: get_project_id
+    #   run: |
+    #     response=$(curl --request GET \
+    #       --url 'https://api.env0.com/projects?organizationId=495ff223-396d-4354-b141-d6cac7560431' \
+    #       --header 'accept: application/json' \
+    #       --header 'content-type: application/json' \
+    #       --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB')
+    #     echo "API Response: $response"
+    #     projectId=$(echo "$response" | jq -r '.[] | select(.name=="${{ github.event.inputs.projectName }}").id')
+    #     echo "::set-output name=projectId::$projectId"
         
-    - name: Get Environment ID
-      id: get_environment_id
-      run: |
-        response=$(curl --request GET \
-          --url 'https://api.env0.com/environments?organizationId=495ff223-396d-4354-b141-d6cac7560431&projectId=${{ steps.get_project_id.outputs.projectId }}' \
-          --header 'accept: application/json' \
-          --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
-          --header 'content-type: application/json')
-        echo "API Response: $response"
-        environmentId=$(echo "$response" | jq -r --arg envName "${{ github.event.inputs.environmentName }}" '.[] | select(.name==$envName).id')
-        echo "::set-output name=environmentId::$environmentId"
+    # - name: Get Environment ID
+    #   id: get_environment_id
+    #   run: |
+    #     response=$(curl --request GET \
+    #       --url 'https://api.env0.com/environments?organizationId=495ff223-396d-4354-b141-d6cac7560431&projectId=${{ steps.get_project_id.outputs.projectId }}' \
+    #       --header 'accept: application/json' \
+    #       --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
+    #       --header 'content-type: application/json')
+    #     echo "API Response: $response"
+    #     environmentId=$(echo "$response" | jq -r --arg envName "${{ github.event.inputs.environmentName }}" '.[] | select(.name==$envName).id')
+    #     echo "::set-output name=environmentId::$environmentId"
 
     
     - name: Delete Environment
       id: delete_environment
       run: |
         curl --request POST \
-         --url https://api.env0.com/environments/"${{ steps.get_environment_id.outputs.environmentId }}"/destroy \
+         --url https://api.env0.com/environments/"${{ github.event.inputs.envId }}"/destroy \
          --header 'accept: application/json' \
          --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
          --header 'content-type: application/json'
