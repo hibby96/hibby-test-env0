@@ -51,7 +51,13 @@ jobs:
         {
           "deployRequest": {
             "configurationChanges": {
-              "type": 0
+              "type": 0,
+              "schema": {
+                "type": "string",
+                "enum": [
+                  "string"
+                ],
+                "format": "HCL"
             },
             "ttl": {
               "type": "INFINITE"
