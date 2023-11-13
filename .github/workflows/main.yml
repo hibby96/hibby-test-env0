@@ -52,7 +52,7 @@ jobs:
           "configurationChanges": {
             "type": 0
           },
-          "repository": "github.com",
+          "repository": "https://github.com/hibby96/platinum-sample-app",
           "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
           "name": "test-env",
           "projectId": "${{ steps.get_project_id.outputs.projectId }}"
