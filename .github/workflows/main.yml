@@ -65,7 +65,7 @@ jobs:
           },
           "name": "${{ github.event.inputs.envName }}",
           "projectId": "${{ steps.get_project_id.outputs.projectId }}",
-          "workspaceName": "${{ github.event.inputs.projectName }}-${{ github.event.inputs.owner }}"
+          "workspaceName": "${{ github.event.inputs.projectName }}-${{ github.event.inputs.owner }}",
           "requiresApproval": true,
           "organizationId": "495ff223-396d-4354-b141-d6cac7560431",
           "repository": "https://github.com/hibby96/platinum-sample-app",
