@@ -47,7 +47,14 @@ jobs:
           "ttl": {
             "type": "INFINITE"
           },
+          "deployRequest": {
+            "deploymentType": "deploy",
+            "blueprintRepository": "https://github.com/hibby96/platinum-sample-app",
+            "blueprintId": "1"
+            "ttl": {
+              "type": "INFINITE"
+            }
+          },
           "continuousDeployment": false,
           "pullRequestPlanDeployments": false
         }'
-
