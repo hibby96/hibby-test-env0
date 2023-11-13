@@ -60,7 +60,7 @@ jobs:
     #           "type": "INFINITE"
     #         }
     #       },
-          "continuousDeployment": false,
-          "pullRequestPlanDeployments": false
-        }'
+        #   "continuousDeployment": false,
+        #   "pullRequestPlanDeployments": false
+        # }'
 
