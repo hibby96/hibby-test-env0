@@ -45,8 +45,8 @@ jobs:
         curl --request POST \
              --url https://api.env0.com/environments/without-template \
              --header 'accept: application/json' \
-             --header 'authorization: Basic eHUyYy0zeGNwZ3JoejZ0bjpPcW8tODhpSHVzOFdIb0ZSc1ZEWkctUUoyZ0JaYkdLQg==' \
              --header 'content-type: application/json' \
+             --user 'xu2c-3xcpgrhz6tn:Oqo-88iHus8WHoFRsVDZG-QJ2gBZbGKB' \
              --data '
         {
           "deployRequest": {
